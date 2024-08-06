@@ -37,61 +37,63 @@ export default function Main() {
       });
     }
 
-    // TODO: Drag and drop cards in same list
-    if (type === 'LIST' && source.droppableId === destination.droppableId) {
-      const listData = lists[source.droppableId];
-      const newListCardsOrder = [...listData.cards];
+    if (type === 'LIST') {
+      // TODO: Drag and drop cards in same list
+      if (source.droppableId === destination.droppableId) {
+        const listData = lists[source.droppableId];
+        const newListCardsOrder = [...listData.cards];
 
-      newListCardsOrder.splice(source.index, 1);
-      newListCardsOrder.splice(destination.index, 0, event.draggableId);
+        newListCardsOrder.splice(source.index, 1);
+        newListCardsOrder.splice(destination.index, 0, event.draggableId);
 
-      setData((prevData) => {
-        return {
-          ...prevData,
-          lists: {
-            ...prevData.lists,
-            [destination.droppableId]: {
-              ...prevData.lists[destination.droppableId],
-              cards: newListCardsOrder,
+        setData((prevData) => {
+          return {
+            ...prevData,
+            lists: {
+              ...prevData.lists,
+              [destination.droppableId]: {
+                ...prevData.lists[destination.droppableId],
+                cards: newListCardsOrder,
+              },
             },
-          },
-        };
-      });
-    }
+          };
+        });
+      }
 
-    // TODO: Drag and drop cards to different list
-    if (type === 'LIST' && source.droppableId !== destination.droppableId) {
-      const sourceList = lists[source.droppableId];
-      const destinationList = lists[destination.droppableId];
+      // TODO: Drag and drop cards to different list
+      if (source.droppableId !== destination.droppableId) {
+        const sourceList = lists[source.droppableId];
+        const destinationList = lists[destination.droppableId];
 
-      // Remove card from source list
-      const newSourceListCardsOrder = [...sourceList.cards];
-      newSourceListCardsOrder.splice(source.index, 1);
+        // Remove card from source list
+        const newSourceListCardsOrder = [...sourceList.cards];
+        newSourceListCardsOrder.splice(source.index, 1);
 
-      // Insert card into destination list
-      const newDestinationListCardsOrder = [...destinationList.cards];
-      newDestinationListCardsOrder.splice(
-        destination.index,
-        0,
-        event.draggableId,
-      );
+        // Insert card into destination list
+        const newDestinationListCardsOrder = [...destinationList.cards];
+        newDestinationListCardsOrder.splice(
+          destination.index,
+          0,
+          event.draggableId,
+        );
 
-      setData((prevData) => {
-        return {
-          ...prevData,
-          lists: {
-            ...prevData.lists,
-            [source.droppableId]: {
-              ...prevData.lists[source.droppableId],
-              cards: newSourceListCardsOrder,
+        setData((prevData) => {
+          return {
+            ...prevData,
+            lists: {
+              ...prevData.lists,
+              [source.droppableId]: {
+                ...prevData.lists[source.droppableId],
+                cards: newSourceListCardsOrder,
+              },
+              [destination.droppableId]: {
+                ...prevData.lists[destination.droppableId],
+                cards: newDestinationListCardsOrder,
+              },
             },
-            [destination.droppableId]: {
-              ...prevData.lists[destination.droppableId],
-              cards: newDestinationListCardsOrder,
-            },
-          },
-        };
-      });
+          };
+        });
+      }
     }
   };
 

@@ -23,7 +23,10 @@ export default function TrelloList({ listData, sourceData, index }) {
   const { cards } = sourceData;
   const { title: listTitle, cards: listCards } = listData;
 
-  const scrollTopDivRef = useRef(null);
+  // Ref hooks
+  const trelloListEl = useRef(null);
+
+  // State hooks
   const [isLoading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -85,7 +88,7 @@ export default function TrelloList({ listData, sourceData, index }) {
                   }
                 >
                   <div
-                    ref={scrollTopDivRef}
+                    ref={trelloListEl}
                     id="custom-scrollbar"
                     className="max-h-[calc(100vh_-_5.6rem_-_12rem)] overflow-y-auto"
                   >
@@ -102,13 +105,13 @@ export default function TrelloList({ listData, sourceData, index }) {
                         </List.Item>
                       );
                     })}
-                    
+
                     {/* Drag Drop Placeholder */}
                     {provided.placeholder}
                   </div>
 
                   {/* Scroll back to top button */}
-                  <BackToTopButton scrollRef={scrollTopDivRef} />
+                  <BackToTopButton scrollRef={trelloListEl} />
                 </List>
               </div>
             )}

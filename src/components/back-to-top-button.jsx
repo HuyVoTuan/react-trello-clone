@@ -31,7 +31,7 @@ export default function BackToTopButton({ scrollRef }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Scroll to top
+  // Scroll to top function handler
   const scrollTopHandler = () => {
     scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
   };

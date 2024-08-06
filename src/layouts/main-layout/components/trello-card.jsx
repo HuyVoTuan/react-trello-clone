@@ -11,6 +11,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 
+// Card actions config
 const cardActions = [
   <Tooltip title="Open setting" key="setting">
     <SettingOutlined />
@@ -85,7 +86,7 @@ export default function TrelloCard({ isLoading, cardData, index }) {
               }
             />
           </Card>
-          
+
           {/* Drag Drop Placeholder */}
           {provided.placeholder}
         </div>

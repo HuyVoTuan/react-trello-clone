@@ -21,7 +21,7 @@ const formItemLayout = {
   },
 };
 
-// Form input options
+// Form input options config
 const formMemberOptions = [
   { value: 'vo-tuan-huy', label: 'Vo Tuan Huy' },
   { value: 'tony-nguyen', label: 'Tony Nguyen' },
@@ -72,7 +72,7 @@ export default function ListModalAddCard({ isModalVisible, showModal }) {
   return (
     <>
       <Modal
-        title="Basic Modal"
+        title="Add new card"
         open={isModalVisible}
         onOk={modalOkHandler}
         onCancel={() => showModal(false)}

@@ -1,29 +1,25 @@
 const sourceData = {
-  columns: ['list-1', 'list-2', 'list-3', 'list-4', 'list-5'],
+  columns: ['todo', 'doing', 'review', 'done'],
   lists: {
-    'list-1': {
-      id: 'list-1',
-      title: 'List 1',
+    todo: {
+      id: 'todo',
+      title: 'To do',
       cards: ['card-1'],
     },
-    'list-2': {
-      id: 'list-2',
-      title: 'List 2',
+    doing: {
+      id: 'doing',
+      title: 'Doing',
       cards: ['card-2', 'card-3', 'card-4', 'card-5', 'card-6', 'card-7'],
     },
-    'list-3': {
-      id: 'list-3',
-      title: 'List 3',
-      cards: ['card-8', 'card-9', 'card-10'],
+
+    review: {
+      id: 'review',
+      title: 'Review',
+      cards: ['card-11', 'card-12', 'card-8', 'card-9', 'card-10'],
     },
-    'list-4': {
-      id: 'list-4',
-      title: 'List 4',
-      cards: ['card-11', 'card-12'],
-    },
-    'list-5': {
-      id: 'list-5',
-      title: 'List 5',
+    done: {
+      id: 'done',
+      title: 'Done',
       cards: ['card-13', 'card-14', 'card-15', 'card-16'],
     },
   },
