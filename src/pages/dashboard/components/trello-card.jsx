@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { Draggable } from 'react-beautiful-dnd';
+import { useAppContext } from '../../../contexts/use-app-context';
 
 // UI lib
 import { Tooltip, Popconfirm, Card, Avatar, Spin } from 'antd';
@@ -21,8 +22,11 @@ const cardActions = [
   </Tooltip>,
 ];
 
-export default function TrelloCard({ isLoading, cardData, index }) {
+export default function TrelloCard({ columnId, isLoading, cardData, index }) {
   const { contributors, image, title } = cardData;
+
+  // Context hook
+  const { onDeleteCard } = useAppContext();
 
   return (
     <Draggable draggableId={cardData.id} index={index}>
@@ -41,7 +45,7 @@ export default function TrelloCard({ isLoading, cardData, index }) {
                 key="delete"
                 okText="Yes"
                 cancelText="No"
-                onConfirm={() => console.log('Delete list')}
+                onConfirm={() => onDeleteCard(columnId, cardData)}
                 onCancel={() => console.log('Cancel delete')}
                 title={`Are you sure you want to delete this card?`}
               >
@@ -97,6 +101,7 @@ export default function TrelloCard({ isLoading, cardData, index }) {
 
 TrelloCard.propTypes = {
   index: PropTypes.number.isRequired,
+  columnId: PropTypes.string.isRequired,
   isLoading: PropTypes.bool.isRequired,
   cardData: PropTypes.object.isRequired,
 };

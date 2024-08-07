@@ -1,19 +1,20 @@
 import PropTypes from 'prop-types';
 import debounce from '../helpers/debounce';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, forwardRef } from 'react';
 
 // UI lib
 import { Button, Tooltip } from 'antd';
 import { ArrowUpOutlined } from '@ant-design/icons';
 
+// Constants
 const BACK_TO_TOP_LIMIT = 300;
 
-export default function BackToTopButton({ scrollRef }) {
+const BackToTopButton = (props, ref) => {
   const [backToTopButton, setBackToTopButton] = useState(false);
 
   // Scroll to top
   const scrollTopHandler = () => {
-    scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    ref.current.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   /* WAY 1: THIS WAY IS SLOWER */
@@ -36,39 +37,41 @@ export default function BackToTopButton({ scrollRef }) {
   // Callback hooks
   const handleScroll = useCallback(() => {
     const debouncedHandleScroll = debounce(() => {
-      const currentScrollTop = scrollRef.current.scrollTop;
+      const currentScrollTop = ref.current.scrollTop;
       setBackToTopButton(currentScrollTop > BACK_TO_TOP_LIMIT);
     }, 200); // Adjust the debounce delay as needed
 
     debouncedHandleScroll();
-  }, [scrollRef]);
+  }, [ref]);
 
   // Effect hooks
   useEffect(() => {
-    const scrollTopDiv = scrollRef.current;
+    const scrollTopDiv = ref.current;
     scrollTopDiv.addEventListener('scroll', handleScroll);
 
     return () => {
       scrollTopDiv.removeEventListener('scroll', handleScroll);
     };
-  }, [handleScroll, scrollRef]);
+  }, [handleScroll, ref]);
 
   return (
     <>
       {backToTopButton && (
         <Tooltip title="Scroll to top">
           <Button
-            className="absolute bottom-0 right-5"
             type="primary"
             shape="circle"
             icon={<ArrowUpOutlined />}
+            className="absolute bottom-0 right-5"
             onClick={scrollTopHandler}
           />
         </Tooltip>
       )}
     </>
   );
-}
+};
+
+export default forwardRef(BackToTopButton);
 
 BackToTopButton.propTypes = {
   scrollRef: PropTypes.object.isRequired,

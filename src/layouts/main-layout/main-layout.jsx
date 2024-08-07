@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import Header from './components/header';
 
 export default function MainLayout({ children }) {
@@ -8,3 +9,7 @@ export default function MainLayout({ children }) {
     </>
   );
 }
+
+MainLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

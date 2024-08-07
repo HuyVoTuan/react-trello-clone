@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { FormItem } from 'react-hook-form-antd';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAppContext } from '../../../contexts/use-app-context';
 
 // UI lib
 import { Modal, Form, Input, Select, Space, Avatar } from 'antd';
@@ -37,13 +38,21 @@ const formStatusOptions = [
 const schema = z.object({
   title: z.string().min(1, { message: 'Required' }),
   description: z.string().min(1, { message: 'Required' }),
-  member: z
+  contributors: z
     .array(z.string())
     .nonempty({ message: 'Please select at least one member' }),
   status: z.string(),
 });
 
-export default function ListModalAddCard({ isModalVisible, showModal }) {
+export default function ListModalAddCard({
+  columnId,
+  isModalVisible,
+  showModal,
+}) {
+  // Context hook
+  const { onAddCard } = useAppContext();
+
+  // React hook form
   const {
     reset,
     control,
@@ -53,13 +62,17 @@ export default function ListModalAddCard({ isModalVisible, showModal }) {
     defaultValues: {
       title: '',
       description: '',
-      member: [formMemberOptions[0].value],
+      contributors: [formMemberOptions[0].value],
       status: formStatusOptions[0].value,
     },
     resolver: zodResolver(schema),
   });
 
-  const onModalFinish = (data) => console.log(data);
+
+  // Function handler
+  const onModalFinish = (data) => {
+    onAddCard(columnId, data);
+  };
 
   const modalOkHandler = () => {
     handleSubmit(onModalFinish)();
@@ -78,7 +91,7 @@ export default function ListModalAddCard({ isModalVisible, showModal }) {
         onCancel={() => showModal(false)}
       >
         <Form {...formItemLayout}>
-          <FormItem control={control} name="title" label="Title" required>
+          <FormItem name="title" label="Title" control={control} required>
             <Input />
           </FormItem>
           <FormItem
@@ -89,7 +102,12 @@ export default function ListModalAddCard({ isModalVisible, showModal }) {
           >
             <Input.TextArea rows={4} />
           </FormItem>
-          <FormItem name="member" label="Member" control={control} required>
+          <FormItem
+            name="contributors"
+            label="Contributors"
+            control={control}
+            required
+          >
             <Select
               mode="multiple"
               options={formMemberOptions}
@@ -114,5 +132,6 @@ export default function ListModalAddCard({ isModalVisible, showModal }) {
 
 ListModalAddCard.propTypes = {
   showModal: PropTypes.func.isRequired,
+  columnId: PropTypes.string.isRequired,
   isModalVisible: PropTypes.bool.isRequired,
 };

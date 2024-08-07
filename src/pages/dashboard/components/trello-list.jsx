@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect, useRef } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { useAppContext } from '../../../contexts/use-app-context';
 
 // UI lib
 import { Button, Tooltip, List, Popconfirm, message } from 'antd';
@@ -11,17 +12,11 @@ import TrelloCard from './trello-card';
 import ListModalAddCard from './list-modal-add-card';
 import BackToTopButton from '../../../components/back-to-top-button';
 
-// Component functions
-const popConfirmHandler = () => {
-  message.success('Click on Yes');
-};
-const popCancelHandler = () => {
-  message.error('Click on No');
-};
-
 export default function TrelloList({ listData, sourceData, index }) {
   const { cards } = sourceData;
-  const { title: listTitle, cards: listCards } = listData;
+
+  // Context hook
+  const { onDeleteList } = useAppContext();
 
   // Ref hooks
   const trelloListEl = useRef(null);
@@ -55,7 +50,7 @@ export default function TrelloList({ listData, sourceData, index }) {
                   header={
                     <div className="flex items-center justify-center">
                       <h3 className="flex-1 text-2xl font-semibold">
-                        {listTitle}
+                        {listData.title}
                       </h3>
                       <div className="flex gap-4">
                         <Tooltip title="Add new card" placement="top">
@@ -70,8 +65,10 @@ export default function TrelloList({ listData, sourceData, index }) {
                           <Popconfirm
                             title="Delete this list"
                             description="Are you sure to delete this list?"
-                            onConfirm={popConfirmHandler}
-                            onCancel={popCancelHandler}
+                            onConfirm={() => onDeleteList(listData.id)}
+                            onCancel={() => {
+                              message.error('Click on No');
+                            }}
                             okText="Yes"
                             cancelText="No"
                           >
@@ -80,6 +77,7 @@ export default function TrelloList({ listData, sourceData, index }) {
                         </Tooltip>
 
                         <ListModalAddCard
+                          columnId={listData.id}
                           showModal={setModalVisible}
                           isModalVisible={isModalVisible}
                         />
@@ -92,8 +90,8 @@ export default function TrelloList({ listData, sourceData, index }) {
                     id="custom-scrollbar"
                     className="max-h-[calc(100vh_-_5.6rem_-_12rem)] overflow-y-auto"
                   >
-                    {listCards?.map((item, index) => {
-                      const cardData = cards?.[item];
+                    {listData.cards.map((item, index) => {
+                      const cardData = cards[item];
 
                       return (
                         <List.Item key={cardData.id} className="w-full">
@@ -101,6 +99,7 @@ export default function TrelloList({ listData, sourceData, index }) {
                             index={index}
                             cardData={cardData}
                             isLoading={isLoading}
+                            columnId={listData.id}
                           />
                         </List.Item>
                       );
@@ -111,7 +110,7 @@ export default function TrelloList({ listData, sourceData, index }) {
                   </div>
 
                   {/* Scroll back to top button */}
-                  <BackToTopButton scrollRef={trelloListEl} />
+                  <BackToTopButton ref={trelloListEl} />
                 </List>
               </div>
             )}
