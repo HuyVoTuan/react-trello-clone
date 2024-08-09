@@ -8,6 +8,7 @@ import { CloseOutlined } from '@ant-design/icons';
 function AddNewListButton() {
   // State hook
   const [trelloList, setTrelloList] = useState('');
+  const [inputError, setInputError] = useState('');
   const [isNewListModalVisible, setNewListModalVisible] = useState(false);
 
   // Context hook
@@ -18,17 +19,22 @@ function AddNewListButton() {
     setTrelloList(event.target.value);
   };
 
+  const resetModalState = () => {
+    setTrelloList('');
+    setInputError('');
+    setNewListModalVisible(false);
+  };
+
   const onAddListHandler = () => {
-    // TODO: Implement validation for empty list title
-    if (!trelloList) {
+    if (!trelloList || trelloList.trim() === '') {
+      setInputError('Please enter a list title');
       return;
     }
 
     onAddList(trelloList);
 
-    // Reset the input field and hide the modal
-    setTrelloList('');
-    setNewListModalVisible(false);
+    // Reset state
+    resetModalState();
   };
 
   return (
@@ -41,19 +47,21 @@ function AddNewListButton() {
             <Button key="confirm" type="primary" onClick={onAddListHandler}>
               Add list
             </Button>,
-            <CloseOutlined
-              key="cancel"
-              onClick={() => {
-                setNewListModalVisible(false);
-              }}
-            />,
+            <CloseOutlined key="cancel" onClick={resetModalState} />,
           ]}
         >
           <Input
-            placeholder="Enter list title"
+            required
             value={trelloList}
             onChange={onChangeHandler}
+            placeholder="Enter list title"
+            className={`${inputError ? 'border-red-500' : ''}`}
           />
+          <div>
+            {inputError && (
+              <span className="text-sm text-red-500">{inputError}</span>
+            )}
+          </div>
         </Card>
       ) : (
         <Button
