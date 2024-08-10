@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { FormItem } from 'react-hook-form-antd';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useImperativeHandle, forwardRef, useState } from 'react';
 import { useAppContext } from '../../../contexts/use-app-context';
 
 // UI lib
-import { Modal, Form, Input, Select, Space, Avatar } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { Modal, Form, Input, Select, Space, Avatar } from 'antd';
 
 // Form layout
 const formItemLayout = {
@@ -44,13 +45,27 @@ const schema = z.object({
   status: z.string(),
 });
 
-export default function ListModalAddCard({
-  columnId,
-  isModalVisible,
-  showModal,
-}) {
+/* 
+  1.) The ListModalAddCard component is a modal form that allows users to add a new card to a list.
+  2.) Using the forwardRef hook, the component exposes a function to the parent component to show or hide the modal.
+  => 
+    Optimize render performance.
+    Prevent re-rendering of the TrelloList with it childs when the ListModalAddCard component re-renders.
+*/
+const ListModalAddCard = forwardRef(function ListModalAddCard(
+  { columnId },
+  ref,
+) {
+  // State hook
+  const [isModalVisible, setModalVisible] = useState(false);
+
   // Context hook
   const { onAddCard } = useAppContext();
+
+  // Expose function to parent component (TrelloList)
+  useImperativeHandle(ref, () => ({
+    showModal: () => setModalVisible((prevModalVisible) => !prevModalVisible),
+  }));
 
   // React hook form
   const {
@@ -68,7 +83,6 @@ export default function ListModalAddCard({
     resolver: zodResolver(schema),
   });
 
-
   // Function handler
   const onModalFinish = (data) => {
     onAddCard(columnId, data);
@@ -78,7 +92,7 @@ export default function ListModalAddCard({
     handleSubmit(onModalFinish)();
     if (isValid) {
       reset();
-      showModal(false);
+      setModalVisible(false);
     }
   };
 
@@ -88,7 +102,7 @@ export default function ListModalAddCard({
         title="Add new card"
         open={isModalVisible}
         onOk={modalOkHandler}
-        onCancel={() => showModal(false)}
+        onCancel={() => setModalVisible(false)}
       >
         <Form {...formItemLayout}>
           <FormItem name="title" label="Title" control={control} required>
@@ -128,10 +142,10 @@ export default function ListModalAddCard({
       </Modal>
     </>
   );
-}
+});
+
+export default ListModalAddCard;
 
 ListModalAddCard.propTypes = {
-  showModal: PropTypes.func.isRequired,
   columnId: PropTypes.string.isRequired,
-  isModalVisible: PropTypes.bool.isRequired,
 };

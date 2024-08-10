@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAppContext } from '../../../contexts/use-app-context';
 
 // UI lib
@@ -10,6 +10,9 @@ function AddNewListButton() {
   const [trelloList, setTrelloList] = useState('');
   const [inputError, setInputError] = useState('');
   const [isNewListModalVisible, setNewListModalVisible] = useState(false);
+
+  // Ref hook
+  const inputEl = useRef(null);
 
   // Context hook
   const { onAddList } = useAppContext();
@@ -26,11 +29,14 @@ function AddNewListButton() {
   };
 
   const onAddListHandler = () => {
+    // Validate input
     if (!trelloList || trelloList.trim() === '') {
       setInputError('Please enter a list title');
+      inputEl.current.focus();
       return;
     }
 
+    // Add new list to the context
     onAddList(trelloList);
 
     // Reset state
@@ -52,10 +58,11 @@ function AddNewListButton() {
         >
           <Input
             required
+            ref={inputEl}
             value={trelloList}
             onChange={onChangeHandler}
             placeholder="Enter list title"
-            className={`${inputError ? 'border-red-500' : ''}`}
+            className={`${inputError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
           />
           <div>
             {inputError && (

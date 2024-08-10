@@ -20,10 +20,10 @@ export default function TrelloList({ listData, sourceData, index }) {
 
   // Ref hooks
   const trelloListEl = useRef(null);
+  const modalAddCardEl = useRef(null);
 
   // State hooks
   const [isLoading, setLoading] = useState(true);
-  const [isModalVisible, setModalVisible] = useState(false);
 
   // Simulate loading effect
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function TrelloList({ listData, sourceData, index }) {
                           <Button
                             shape="circle"
                             icon={<PlusOutlined />}
-                            onClick={() => setModalVisible(true)}
+                            onClick={() => modalAddCardEl.current.showModal()}
                           />
                         </Tooltip>
 
@@ -77,9 +77,8 @@ export default function TrelloList({ listData, sourceData, index }) {
                         </Tooltip>
 
                         <ListModalAddCard
+                          ref={modalAddCardEl}
                           columnId={listData.id}
-                          showModal={setModalVisible}
-                          isModalVisible={isModalVisible}
                         />
                       </div>
                     </div>
