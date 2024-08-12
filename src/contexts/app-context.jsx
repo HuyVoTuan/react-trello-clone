@@ -31,6 +31,20 @@ export const AppProvider = ({ children }) => {
     setTrelloBoard(copiedTrelloBoard);
   };
 
+  const onEditCard = (columnId, trelloCard) => {
+    const copiedTrelloBoard = { ...trelloBoard };
+    const trelloCardIndex = copiedTrelloBoard.lists[columnId].cards.indexOf(
+      trelloCard.id,
+    );
+
+    copiedTrelloBoard.cards[trelloCard.id] = { ...trelloCard };
+    if (trelloCardIndex !== -1) {
+      copiedTrelloBoard.lists[columnId].cards[trelloCardIndex] = trelloCard.id;
+    }
+
+    setTrelloBoard(copiedTrelloBoard);
+  };
+
   const onDeleteCard = (columnId, trelloCard) => {
     const copiedTrelloBoard = { ...trelloBoard };
     const trelloCardIndex = copiedTrelloBoard.lists[columnId].cards.indexOf(
@@ -180,6 +194,7 @@ export const AppProvider = ({ children }) => {
       value={{
         trelloBoard,
         onAddCard,
+        onEditCard,
         onDeleteCard,
         onDeleteList,
         onAddList,

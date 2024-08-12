@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { FormItem } from 'react-hook-form-antd';
@@ -29,12 +30,6 @@ const formMemberOptions = [
   { value: 'tony-nguyen', label: 'Tony Nguyen' },
 ];
 
-const formStatusOptions = [
-  { value: 'newly-created', label: 'New' },
-  { value: 'in-progress', label: 'In Progress' },
-  { value: 'done', label: 'Done' },
-];
-
 // Form object schema
 const schema = z.object({
   title: z.string().min(1, { message: 'Required' }),
@@ -42,27 +37,26 @@ const schema = z.object({
   contributors: z
     .array(z.string())
     .nonempty({ message: 'Please select at least one member' }),
-  status: z.string(),
 });
 
 /* 
-  1.) The ListModalAddCard component is a modal form that allows users to add a new card to a list.
+  1.) The ListModalCard component is a modal form that allows users to add a new card to a list.
   2.) Using the forwardRef hook, the component exposes a function to the parent component to show or hide the modal.
   => 
     Optimize render performance.
-    Prevent re-rendering of the TrelloList with it childs when the ListModalAddCard component re-renders.
+    Prevent re-rendering of the TrelloList with it childs when the ListModalCard component re-renders.
 */
-const ListModalAddCard = forwardRef(function ListModalAddCard(
-  { columnId },
+const ListModalCard = forwardRef(function ListModalCard(
+  { columnId, type, cardData },
   ref,
 ) {
   // State hook
   const [isModalVisible, setModalVisible] = useState(false);
 
   // Context hook
-  const { onAddCard } = useAppContext();
+  const { onAddCard, onEditCard } = useAppContext();
 
-  // Expose function to parent component (TrelloList)
+  // Expose function to parent component (TrelloList, TrelloCard)
   useImperativeHandle(ref, () => ({
     showModal: () => setModalVisible((prevModalVisible) => !prevModalVisible),
   }));
@@ -75,21 +69,40 @@ const ListModalAddCard = forwardRef(function ListModalAddCard(
     formState: { isValid },
   } = useForm({
     defaultValues: {
-      title: '',
-      description: '',
-      contributors: [formMemberOptions[0].value],
-      status: formStatusOptions[0].value,
+      title: cardData?.title || '',
+      description: cardData?.description || '',
+      contributors: cardData?.contributors || [formMemberOptions[0].value],
     },
     resolver: zodResolver(schema),
   });
 
+  // Effect hook
+  useEffect(() => {
+    reset({
+      title: cardData?.title || '',
+      description: cardData?.description || '',
+      contributors: cardData?.contributors || [formMemberOptions[0].value],
+    });
+  }, [cardData, reset]);
+
   // Function handler
-  const onModalFinish = (data) => {
+  const onModalAddFinish = (data) => {
     onAddCard(columnId, data);
   };
 
+  const onModalEditFinish = (data) => {
+    onEditCard(columnId, { ...data, id: cardData?.id, image: cardData?.image });
+  };
+
   const modalOkHandler = () => {
-    handleSubmit(onModalFinish)();
+    if (type === 'edit-card') {
+      handleSubmit(onModalEditFinish)();
+    }
+
+    if (type === 'add-card') {
+      handleSubmit(onModalAddFinish)();
+    }
+
     if (isValid) {
       reset();
       setModalVisible(false);
@@ -99,7 +112,7 @@ const ListModalAddCard = forwardRef(function ListModalAddCard(
   return (
     <>
       <Modal
-        title="Add new card"
+        title={type}
         open={isModalVisible}
         onOk={modalOkHandler}
         onCancel={() => setModalVisible(false)}
@@ -135,17 +148,16 @@ const ListModalAddCard = forwardRef(function ListModalAddCard(
               }}
             />
           </FormItem>
-          <FormItem name="status" label="Status" control={control}>
-            <Select options={formStatusOptions} />
-          </FormItem>
         </Form>
       </Modal>
     </>
   );
 });
 
-export default ListModalAddCard;
+export default ListModalCard;
 
-ListModalAddCard.propTypes = {
+ListModalCard.propTypes = {
+  cardData: PropTypes.object,
   columnId: PropTypes.string.isRequired,
+  type: PropTypes.oneOf(['add-card', 'edit-card']).isRequired,
 };

@@ -7,7 +7,7 @@ import { Button, Tooltip } from 'antd';
 import { ArrowUpOutlined } from '@ant-design/icons';
 
 // Constants
-const BACK_TO_TOP_LIMIT = 300;
+import { BACK_TO_TOP_LIMIT } from '../constants';
 
 const BackToTopButton = (props, ref) => {
   const [backToTopButton, setBackToTopButton] = useState(false);

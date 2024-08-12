@@ -9,7 +9,7 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
 // Components
 import TrelloCard from './trello-card';
-import ListModalAddCard from './list-modal-add-card';
+import ListModalCard from './list-modal-card';
 import BackToTopButton from '../../../components/back-to-top-button';
 
 export default function TrelloList({ listData, sourceData, index }) {
@@ -18,17 +18,18 @@ export default function TrelloList({ listData, sourceData, index }) {
   // Context hook
   const { onDeleteList } = useAppContext();
 
-  // Ref hooks
+  // Ref hook
   const trelloListEl = useRef(null);
   const modalAddCardEl = useRef(null);
 
-  // State hooks
-  const [isLoading, setLoading] = useState(true);
+  // State hook
+  const [isListLoading, setListLoading] = useState(true);
 
-  // Simulate loading effect
+  // Effect hook
+  // Initial trello list fetching effect stimulation
   useEffect(() => {
     const timer = setTimeout(() => {
-      setLoading(false);
+      setListLoading(false);
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -76,7 +77,8 @@ export default function TrelloList({ listData, sourceData, index }) {
                           </Popconfirm>
                         </Tooltip>
 
-                        <ListModalAddCard
+                        <ListModalCard
+                          type="add-card"
                           ref={modalAddCardEl}
                           columnId={listData.id}
                         />
@@ -97,8 +99,8 @@ export default function TrelloList({ listData, sourceData, index }) {
                           <TrelloCard
                             index={index}
                             cardData={cardData}
-                            isLoading={isLoading}
                             columnId={listData.id}
+                            isListLoading={isListLoading}
                           />
                         </List.Item>
                       );
